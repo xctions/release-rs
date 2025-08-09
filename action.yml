@@ -20,9 +20,24 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: "Debug Inputs"
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Determine Binary Name
+      id: get_binary_name
       shell: bash
       run: |
-        echo "Binary Name: ${{ inputs.binary_name }}"
-        echo "Release Tag: ${{ inputs.release-tag }}"
-        echo "Platforms: ${{ inputs.platforms }}"
+        if [[ -n "${{ inputs.binary_name }}" ]]; then
+          echo "binary_name=${{ inputs.binary_name }}" >> $GITHUB_OUTPUT
+        else
+          echo "binary_name=${{ github.event.repository.name }}" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Run Secure Build
+      shell: bash
+      run: |
+        # Note: For now, we are hardcoding a single platform for simplicity.
+        # We will replace this with matrix logic in the next phase.
+        ${{ github.action_path }}/scripts/secure-build.sh \
+          ${{ steps.get_binary_name.outputs.binary_name }} \
+          x86_64-unknown-linux-gnu
