@@ -12,7 +12,7 @@ inputs:
   platforms:
     description: 'A comma-separated list of platforms to build for.'
     required: false
-    default: 'linux-x86_64,windows-x86_64'
+    default: 'linux-x86_64'
   github-token:
     description: 'The GitHub token for creating releases and uploading assets.'
     required: true
@@ -36,8 +36,24 @@ runs:
     - name: Run Secure Build
       shell: bash
       run: |
-        # Note: For now, we are hardcoding a single platform for simplicity.
-        # We will replace this with matrix logic in the next phase.
         ${{ github.action_path }}/scripts/secure-build.sh \
           ${{ steps.get_binary_name.outputs.binary_name }} \
           x86_64-unknown-linux-gnu
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      with:
+        tag_name: ${{ inputs.release-tag }}
+        release_name: Release ${{ inputs.release-tag }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: |
+        gh release upload ${{ inputs.release-tag }} release/*
