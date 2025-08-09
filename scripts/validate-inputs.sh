@@ -33,7 +33,7 @@ validate_binary_name() {
         "con"|"prn"|"aux"|"nul"|"com1"|"com2"|"com3"|"com4"|"com5"|"com6"|"com7"|"com8"|"com9"|"lpt1"|"lpt2"|"lpt3"|"lpt4"|"lpt5"|"lpt6"|"lpt7"|"lpt8"|"lpt9")
             echo "Error: Reserved name cannot be used as binary name: $binary_name"
             return 1
-            ;;
+        ;;
     esac
     
     return 0
@@ -232,7 +232,7 @@ validate_file_path() {
         /*)
             echo "Error: Absolute paths not allowed: $file_path"
             return 1
-            ;;
+        ;;
     esac
     
     # Resolve path and check if it's within base directory
